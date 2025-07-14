@@ -15,7 +15,7 @@ DEEP_BLUE = '#0D47A1'
 NIVEIS_DE_TREINO = ["Básico", "Intermediário", "Avançado"]
 
 #estilos visuais do tkinter 
-def setup_styles(style):
+def configurar_estilos(style):
     style.theme_use('clam')
     style.configure('TFrame', background=LIGHT_BLUE)
     style.configure('TLabel', background=LIGHT_BLUE, font=('Arial', 11), foreground=DARK_BLUE)
