@@ -1,7 +1,7 @@
 import tkinter as tk
-from interface import GymAssistantApp
+from interface import AppAssistenteDeTreinos
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = GymAssistantApp(root)
+    app = AppAssistenteDeTreinos(root)
     root.mainloop()
