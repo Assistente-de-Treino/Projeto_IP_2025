@@ -1,7 +1,7 @@
 #configurações do programa
 # aqui são criadas as constantes de arquivos e dados, não precisa mexer 
-CSV_FILE_PATH = "data/exercicios.csv" 
-REQUIRED_COLUMNS = ["Nome", "Grupo", "Nivel", "DemandaEnergetica", "Tipo", "DescricaoDetalhada", "GifURL"]
+CAMINHO_ARQUIVO_CSV = "data/exercicios.csv" 
+COLUNAS_OBRIGATORIAS = ["Nome", "Grupo", "Nivel", "DemandaEnergetica", "Tipo", "DescricaoDetalhada", "GifURL"]
 
 # paleta de cores, aqui são somente tons de azul 
 PRIMARY_BLUE = '#2196F3'
@@ -12,7 +12,7 @@ DARKER_BLUE = '#1565C0'
 DEEP_BLUE = '#0D47A1'
 
 
-Niveis_de_treino = ["Básico", "Intermediário", "Avançado"]
+NIVEIS_DE_TREINO = ["Básico", "Intermediário", "Avançado"]
 
 #estilos visuais do tkinter 
 def setup_styles(style):
