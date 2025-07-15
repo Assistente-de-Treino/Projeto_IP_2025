@@ -33,8 +33,6 @@ Prancha,Abdômen,Básico,Baixa,Composto,"Mantenha o corpo reto, apoiado nos ante
 Abdominal Remador,Abdômen,Intermediário,Baixa,Isolado,"Deite-se, sente-se e abrace os joelhos, retornando à posição inicial.","assets/abdominal_remador.gif"
 Elevação de Pernas,Abdômen,Avançado,Baixa,Isolado,"Deite-se, eleve as pernas retas em direção ao teto.","assets/elevacao_pernas.gif"
 Abdominal Crunch,Abdômen,Básico,Baixa,Isolado,"Deite-se, mãos na cabeça, eleve o tronco contraindo o abdômen.","assets/abdominal_crunch.gif"
-<<<<<<< HEAD
-=======
 Cadeira Flexora,Pernas,Básico,Baixa,Isolado,"Sente e ajuste o banco para a trava ficar acima dos joelhos, flexione o joelho e retorne o movimento controladamente.","assets/cadeira_flexora.gif"
 Elevação de quadril,Pernas,Intermediário,Alta,Composto,"Encoste no banco e ponha a barra com peso na região da pelve e inicie o movimento subindo o quadril com os péz abduzidos.","assets/elevacao_quadril.gif"
->>>>>>> 3c62c46341ee4527f69bf8c9348f7e00331c9411
+Barra fixa,Costas,Avançado,Alta,"Pendure-se numa barra com os braços estendidos e puxe o corpo para cima","barra_fixa.gif"
