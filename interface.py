@@ -1,32 +1,34 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
 import config
 import utils
 from logica_de_treinos import GeradorDosTreinos
 
-class AppAssistenteDeTreinos:
+class GymAssistantApp:
     def __init__(self, master):
         self.master = master
         master.title("Assistente de Treinos - Ficha de Treino")
         master.geometry("1200x800")
         master.bind("<Escape>", lambda e: master.attributes('-fullscreen', False))
 
-        #estilização
+        # Estilização
         self.style = ttk.Style()
-        config.configurar_estilos(self.style)
+        config.setup_styles(self.style)
 
-        #carrega os dados
-        self.df_exercicios = utils.carregar_dados_exercicios()
+        # Carregar dados
+        self.df_exercicios = utils.load_exercise_data()
         if self.df_exercicios is None:
             master.destroy()
             return
 
-        self.mostrar_tela_inicial()
+        self.show_welcome_screen()
 
-    def limpar_interface(self):
+    def clear_frame(self):
         for widget in self.master.winfo_children():
             widget.destroy()
 
-    def mostrar_tela_inicial(self):
-        self.limpar_interface()
+    def show_welcome_screen(self):
+        self.clear_frame()
         welcome_frame = ttk.Frame(self.master, style='TFrame')
         welcome_frame.pack(expand=True, fill=tk.BOTH)
         
@@ -35,10 +37,10 @@ class AppAssistenteDeTreinos:
 
         # Simplicidade na tela de boas-vindas
         ttk.Label(canvas, text="GYM Assistant", font=('Helvetica', 64, 'bold'), foreground=config.DEEP_BLUE, background=config.LIGHT_BLUE).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-        ttk.Button(canvas, text="Iniciar", command=self.mostrar_interface_principal, style='TButton').place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+        ttk.Button(canvas, text="Iniciar", command=self.show_main_app, style='TButton').place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 
-    def mostrar_interface_principal(self):
-        self.limpar_interface()
+    def show_main_app(self):
+        self.clear_frame()
         main_frame = ttk.Frame(self.master, padding="20", style='TFrame')
         main_frame.pack(expand=True, fill=tk.BOTH)
         
@@ -52,13 +54,13 @@ class AppAssistenteDeTreinos:
         self.entrada_idade = self._create_input_field(input_frame, "Idade:")
         self.entrada_altura = self._create_input_field(input_frame, "Altura (cm):")
         self.entrada_peso = self._create_input_field(input_frame, "Peso (kg):")
-        self.nivel_var, self.nivel_combo = self._create_combobox_field(input_frame, "Nível de treino:", config.NIVEIS_DE_TREINO)
+        self.nivel_var, self.nivel_combo = self._create_combobox_field(input_frame, "Nível de treino:", config.Niveis_de_treino)
 
         ttk.Button(parent, text="Gerar Fichas de Treino", command=self.gerar_fichas).pack(pady=15, fill=tk.X)
         self.imc_label = ttk.Label(parent, text="", font=('Arial', 12, 'bold'), style='TLabel')
         self.imc_label.pack(pady=5)
 
-        #Tela das fichas de exercícios
+        # Notebook para as fichas
         self.notebook = ttk.Notebook(parent)
         self.notebook.pack(expand=True, fill=tk.BOTH, pady=10)
         self.daily_trees = {}
@@ -67,7 +69,7 @@ class AppAssistenteDeTreinos:
             frame = ttk.Frame(self.notebook, style='TFrame')
             self.notebook.add(frame, text=day_name)
             tree = self._create_treeview(frame)
-            tree.bind("<Double-1>", self.ao_clicar_no_exercicio)
+            tree.bind("<Double-1>", self.on_exercise_click)
             self.daily_trees[day_name] = tree
 
     def _create_input_field(self, parent, label_text):
@@ -112,24 +114,24 @@ class AppAssistenteDeTreinos:
                 return
 
             imc = utils.calcular_imc(peso, altura)
-            imc_class = utils.classificar_imc(imc)
-            aerobic_time = utils.obter_tempo_aerobico(imc_class)
+            imc_class = utils.get_imc_classification(imc)
+            aerobic_time = utils.get_aerobic_time(imc_class)
             
             self.imc_label.config(text=f"IMC: {imc:.2f} ({imc_class})")
 
             generator = GeradorDosTreinos(self.df_exercicios)
-            ficha_semanal = generator.gerar_plano_semanal(nivel, imc_class, aerobic_time)
+            ficha_semanal = generator.generate_weekly_plan(nivel, imc_class, aerobic_time)
             
-            self.mostrar_treino_semanal(ficha_semanal)
+            self.display_weekly_plan(ficha_semanal)
 
         except (ValueError, TypeError):
             messagebox.showerror("Erro de Entrada", "Por favor, insira valores numéricos válidos.")
         except Exception as e:
             messagebox.showerror("Erro Inesperado", f"Ocorreu um erro: {e}")
 
-    def mostrar_treino_semanal(self, ficha_semanal):
+    def display_weekly_plan(self, ficha_semanal):
         for day_name, tree in self.daily_trees.items():
-            tree.delete(*tree.get_children())
+            tree.delete(*tree.get_children()) # Limpa a tabela
             exercises = ficha_semanal.get(day_name, [])
             for ex in exercises:
                 values = (
@@ -139,7 +141,7 @@ class AppAssistenteDeTreinos:
                 )
                 tree.insert("", "end", values=values)
 
-    def ao_clicar_no_exercicio(self, event):
+    def on_exercise_click(self, event):
         tree = event.widget
         if not tree.selection(): return
         
@@ -148,9 +150,9 @@ class AppAssistenteDeTreinos:
         
         details = self.df_exercicios[self.df_exercicios["Nome"] == exercise_name]
         if not details.empty:
-            self.mostrar_tela_detalhes_exercicios(details.iloc[0])
+            self.show_exercise_details_popup(details.iloc[0])
 
-    def mostrar_tela_detalhes_exercicios(self, details):
+    def show_exercise_details_popup(self, details):
         popup = tk.Toplevel(self.master)
         popup.title(details["Nome"])
         popup.geometry("700x600")
@@ -170,10 +172,10 @@ class AppAssistenteDeTreinos:
         gif_label = ttk.Label(details_viz_frame, background=config.LIGHT_BLUE)
         gif_label.pack(side=tk.RIGHT, padx=10, fill=tk.BOTH, expand=True)
 
-        gif_manager = utils.Configuracoes_de_gifs(popup, gif_label)
-        gif_manager.carregar_e_iniciar(details["GifURL"])
+        gif_manager = utils.GifManager(popup, gif_label)
+        gif_manager.load_and_play(details["GifURL"])
 
         ttk.Button(content_frame, text="Fechar", command=popup.destroy).pack(pady=10)
 
-        #faz o gif parar quando o popup fecha
-        popup.bind("<Destroy>", lambda e: gif_manager.parar())
+        # Garante que a animação pare quando o popup fechar
+        popup.bind("<Destroy>", lambda e: gif_manager.stop()) 
