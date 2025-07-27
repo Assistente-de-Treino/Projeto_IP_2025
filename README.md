@@ -1,4 +1,7 @@
 Assistente de Academia
+
+
+
 Este é um aplicativo desktop simples desenvolvido em Python com tkinter e pandas que atua como um assistente de academia. Ele calcula o Índice de Massa Corporal (IMC) do usuário e, com base nessa avaliação e no nível de treino, sugere um plano de exercícios personalizado.
 
 ✨ Funcionalidades
