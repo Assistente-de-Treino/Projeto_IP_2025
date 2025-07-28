@@ -267,21 +267,46 @@ class AppAssistenteDeTreinos:
         if not details.empty: self.mostrar_tela_detalhes_exercicios(details.iloc[0])
 
     def mostrar_tela_detalhes_exercicios(self, details):
-        popup = tk.Toplevel(self.master); popup.title(details["Nome"]); popup.geometry("700x600"); popup.transient(self.master); popup.grab_set(); popup.focus_set()
+        popup = tk.Toplevel(self.master)
+        popup.title(details["Nome"])
+        popup.geometry("700x600")
+        popup.transient(self.master)
+        popup.grab_set()
+        popup.focus_set()
         
-        content_frame = ttk.Frame(popup, padding="15", style='TFrame'); content_frame.pack(fill=tk.BOTH, expand=True)
+        content_frame = ttk.Frame(popup, padding="15", style='TFrame')
+        content_frame.pack(fill=tk.BOTH, expand=True)
+
         ttk.Label(content_frame, text=details["Nome"], font=('Helvetica', 20, 'bold'), style='TLabel').pack(pady=10)
 
-        details_viz_frame = ttk.Frame(content_frame, style='TFrame'); details_viz_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+        details_viz_frame = ttk.Frame(content_frame, style='TFrame')
+        details_viz_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+
         ttk.Label(details_viz_frame, text=details["DescricaoDetalhada"], wraplength=300, justify=tk.LEFT).pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=True)
 
-        gif_label = ttk.Label(details_viz_frame, background=self.cores['LIGHT_BLUE']); gif_label.pack(side=tk.RIGHT, padx=10, fill=tk.BOTH, expand=True)
+        gif_label = ttk.Label(details_viz_frame, background=self.cores['LIGHT_BLUE'])
+        gif_label.pack(side=tk.RIGHT, padx=10, fill=tk.BOTH, expand=True)
+
         gif_manager = utils.Configuracoes_de_gifs(popup, gif_label)
         
+        # Obter nome ou caminho do GIF do CSV
         gif_rel_path = details["GifURL"]
-        dir_base_projeto = os.path.dirname(os.path.abspath(__file__))
-        gif_full_path = os.path.join(dir_base_projeto, gif_rel_path)
 
-        gif_manager.carregar_e_iniciar(gif_full_path)
+        dir_base_projeto = os.path.dirname(os.path.abspath(__file__))
+        
+        # Se for apenas o nome do arquivo, buscar na pasta 'assets'
+        if not os.path.dirname(gif_rel_path):  
+            gif_full_path = os.path.join(dir_base_projeto, "assets", gif_rel_path)
+        else:
+            gif_full_path = os.path.join(dir_base_projeto, gif_rel_path)
+
+        gif_full_path = os.path.normpath(gif_full_path)
+
+        # Verifica se o arquivo existe
+        if not os.path.exists(gif_full_path):
+            messagebox.showerror("Erro", f"GIF não encontrado:\n{gif_full_path}")
+        else:
+            gif_manager.carregar_e_iniciar(gif_full_path)
+
         ttk.Button(content_frame, text="Fechar", command=popup.destroy).pack(pady=10)
         popup.bind("<Destroy>", lambda e: gif_manager.parar())
