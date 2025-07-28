@@ -11,10 +11,10 @@ def calcular_imc(peso, altura_cm):
 
 def classificacao_imc(imc):
     if imc < 18.5: return "Abaixo do peso"
-    if 18.5 <= imc < 24.9: return "Peso normal"
-    if 25 <= imc < 29.9: return "Sobrepeso"
-    if 30 <= imc < 34.9: return "Obesidade Grau I"
-    if 35 <= imc < 39.9: return "Obesidade Grau II"
+    if 18.5 <= imc < 25: return "Peso normal"
+    if 25 <= imc < 30: return "Sobrepeso"
+    if 30 <= imc < 35: return "Obesidade Grau I"
+    if 35 <= imc < 40: return "Obesidade Grau II"
     return "Obesidade Grau III (Mórbida)"
 
 def tempo_cardio(imc_classification):
