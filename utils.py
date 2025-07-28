@@ -2,109 +2,89 @@ import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
 import os
-from config import CAMINHO_ARQUIVO_CSV, COLUNAS_OBRIGATORIAS
-from PIL import Image, ImageTk, ImageSequence  # Adicionado para GIFs animados
+from typing import Optional
+
+from PIL import Image, ImageTk, ImageSequence
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+import config
 
 
-def calcular_imc(peso, altura_cm):
-    if altura_cm <= 0:
-        return 0
+def calcular_imc(peso: float, altura_cm: float) -> float: 
+    if altura_cm <= 0: return 0.0
     altura_m = altura_cm / 100
     return peso / (altura_m ** 2)
 
+    
+def classificar_imc(imc: float) -> str:
+    if imc < 18.5: return "Abaixo do peso"
+    if imc < 25: return "Peso normal"
+    if imc < 30: return "Sobrepeso"
+    if imc < 35: return "Obesidade Grau I"
+    if imc < 40: return "Obesidade Grau II"
+    return "Obesidade Grau III (Mórbida)"
 
-def classificar_imc(imc):
-    if imc < 18.5:
-        return "Abaixo do peso"
-    elif 18.5 <= imc < 24.9:
-        return "Peso normal"
-    elif 25 <= imc < 29.9:
-        return "Sobrepeso"
-    elif 30 <= imc < 34.9:
-        return "Obesidade Grau I"
-    elif 35 <= imc < 39.9:
-        return "Obesidade Grau II"
-    else:
-        return "Obesidade Grau III (Mórbida)"
+def obter_tempo_aerobico(classificacao_imc: str) -> str:
+    
+    if "Obesidade" in classificacao_imc or "Sobrepeso" in classificacao_imc: return "30-45 min"
+    if "Peso normal" in classificacao_imc: return "20-30 min"
+    return "15-20 min"
 
-
-def obter_tempo_aerobico(classificacao_imc):
-    if "Obesidade" in classificacao_imc or "Sobrepeso" in classificacao_imc:
-        return "30-45 min"
-    elif "Peso normal" in classificacao_imc:
-        return "20-30 min"
-    else:
-        return "15-20 min"
-
-
-def carregar_dados_exercicios():
+def carregar_dados_exercicios() -> Optional[pd.DataFrame]: # <-- carrega os exercícios dentro do arquivo CSV, 
+                                                                #validando se ele está bem estruturado
     try:
-        if not os.path.exists(CAMINHO_ARQUIVO_CSV):
-            raise FileNotFoundError
+        dir_base = os.path.dirname(os.path.abspath(__file__)) # <-- verifica onde o arquivo está dentro do computador, 
+        caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV) #<-- monta o caminho completo pra chegar no CSV
 
-        df = pd.read_csv(CAMINHO_ARQUIVO_CSV)
+        if not os.path.exists(caminho_completo): raise FileNotFoundError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' não foi encontrado.")
+        df = pd.read_csv(caminho_completo) # <--confirma que o 
 
-        if df.empty:
-            raise pd.errors.EmptyDataError
+        if df.empty: raise ValueError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' está vazio.")
+        colunas_faltantes = [col for col in config.COLUNAS_OBRIGATORIAS if col not in df.columns]
 
-        if not all(col in df.columns for col in COLUNAS_OBRIGATORIAS):
-            colunas_faltantes = [col for col in COLUNAS_OBRIGATORIAS if col not in df.columns]
-            messagebox.showerror("Erro de Dados",
-                                 f"O arquivo 'exercicios.csv' está faltando as colunas: {', '.join(colunas_faltantes)}.")
-            return None
-
+        if colunas_faltantes: raise ValueError(f"Faltam as seguintes colunas no arquivo: {', '.join(colunas_faltantes)}")
         return df
-
-    except FileNotFoundError:
-        messagebox.showerror("Erro", f"Arquivo '{CAMINHO_ARQUIVO_CSV}' não encontrado.")
-        return None
-    except pd.errors.EmptyDataError:
-        messagebox.showerror("Erro de Dados", f"O arquivo '{CAMINHO_ARQUIVO_CSV}' está vazio.")
-        return None
+    except (FileNotFoundError, ValueError) as e:
+        messagebox.showerror("Erro de Dados", str(e))
     except Exception as e:
-        messagebox.showerror("Erro ao Carregar CSV", f"Erro ao ler '{CAMINHO_ARQUIVO_CSV}': {e}")
-        return None
-
-
-class Configuracoes_de_gifs:
-    def __init__(self, master, label_widget):
-        self.master = master
+        messagebox.showerror("Erro Inesperado", f"Ocorreu um erro ao carregar os dados: {e}")
+    return None
+    
+# A classe que faz os GIFs dançarem na tela
+# Cada vez que a gente precisa de um GIF, a gente cria um "gerenciador" desses
+class GerenciadorDeGifs:
+    """Controla o carregamento e animação de GIFs usando Pillow."""
+    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label):
+        self.master = master_widget
         self.label = label_widget
         self.frames = []
-        self.animation_id = None
-        self.current_image = None
-        self.frame_index = 0
+        self.id_animacao = None
 
-    def carregar_e_iniciar(self, gif_path):
+    def carregar_e_iniciar(self, caminho_gif: str):
         self.parar()
-        if not gif_path or not os.path.exists(gif_path):
+        if not caminho_gif or not os.path.exists(caminho_gif):
             self.label.config(text="GIF não disponível.", image='')
             return
-
         try:
-            # Carrega o GIF usando Pillow
-            gif = Image.open(gif_path)
-
-            # Extrai todos os frames e converte para formato compatível com Tkinter
+            gif = Image.open(caminho_gif)
             self.frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
-
-            self.frame_index = 0
-            self.loop_da_animacao()
-        except Exception as e:
-            self.label.config(text=f"Erro ao carregar GIF: {e}", image='')
+            self._iniciar_loop_animacao(0)
+        except Exception:
+            self.label.config(text="Erro ao carregar GIF.", image='')
             self.frames = []
 
-    def loop_da_animacao(self):
-        if not self.frames:
-            return
-
-        self.label.config(image=self.frames[self.frame_index])
-        self.frame_index = (self.frame_index + 1) % len(self.frames)
-        self.animation_id = self.master.after(100, self.loop_da_animacao)
+    def _iniciar_loop_animacao(self, indice_frame: int):
+        if not self.frames: return
+        frame_atual = self.frames[indice_frame]
+        self.label.config(image=frame_atual)
+        proximo_indice = (indice_frame + 1) % len(self.frames)
+        # o '150' aqui é o tempo em milissegundos entre cada frame. Quanto maior, mais lento o GIF.
+        self.id_animacao = self.master.after(150, self._iniciar_loop_animacao, proximo_indice)
 
     def parar(self):
-        if self.animation_id:
-            self.master.after_cancel(self.animation_id)
-            self.animation_id = None
+        if self.id_animacao:
+            self.master.after_cancel(self.id_animacao)
+            self.id_animacao = None
         self.frames = []
-        self.current_image = None
+
