@@ -38,7 +38,8 @@ def carregar_dados_exercicios() -> Optional[pd.DataFrame]: # <-- carrega os exer
         caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV) #<-- monta o caminho completo pra chegar no CSV
 
         if not os.path.exists(caminho_completo): raise FileNotFoundError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' não foi encontrado.")
-        df = pd.read_csv(caminho_completo) # <--confirma que o 
+        df = pd.read_csv(caminho_completo) # <--confirma que o arquivo existe e ele é lido pelo pandas
+                                            # transformando numa tabela
 
         if df.empty: raise ValueError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' está vazio.")
         colunas_faltantes = [col for col in config.COLUNAS_OBRIGATORIAS if col not in df.columns]
