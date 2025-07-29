@@ -10,7 +10,7 @@ import utils
 from logica_de_treinos import GeradorDeTreinos 
 
 class AppAssistenteDeTreinos:
-    def _init_(self, master: tk.Tk):
+    def __init__(self, master: tk.Tk):
         self.master = master
         master.title("Assistente de Treinos")
         master.geometry("1200x800")
@@ -40,13 +40,20 @@ class AppAssistenteDeTreinos:
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         try:
-            caminho_imagem = os.path.join(os.path.dirname(_file_), "assets", "fundo.jpg")
+            caminho_imagem = os.path.join(os.path.dirname(__file__), "assets", "fundo.jpg")
             self.original_image = Image.open(caminho_imagem)
         except FileNotFoundError:
             self.background_label.config(bg=config.CORES['CABECALHO_TABELA'])
             self.original_image = None
 
-        ttk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'), foreground=config.CORES['TEXTO_BOTAO'], background=self.background_label.cget('bg')).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+        
+        # Sombra
+        tk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'),
+                 fg="#000033", bg=self.background_label.cget('bg')).place(relx=0.505, rely=0.405, anchor=tk.CENTER)
+        # Texto principal
+        tk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'),
+                 fg="#0000AA", bg=self.background_label.cget('bg')).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+
         ttk.Button(self.master, text="Iniciar", command=self.mostrar_interface_principal, style='TButton').place(relx=0.5, rely=0.6, anchor=tk.CENTER, width=200, height=50)
         self.master.bind('<Configure>', self._redimensionar_fundo)
     
@@ -164,7 +171,7 @@ class AppAssistenteDeTreinos:
         popup.gerenciador_gif = gerenciador_gif # <-- A CORREÇÃO ESTÁ AQUI
         
         caminho_gif_relativo = detalhes["GifURL"]
-        caminho_gif_completo = os.path.join(os.path.dirname(os.path.abspath(_file_)), caminho_gif_relativo)
+        caminho_gif_completo = os.path.join(os.path.dirname(os.path.abspath(__file__)), caminho_gif_relativo)
         
         gerenciador_gif.carregar_e_iniciar(caminho_gif_completo)
         

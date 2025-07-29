@@ -29,13 +29,13 @@ def obter_tempo_aerobico(classificacao_imc: str) -> str:
     return "15-20 min"
 
 def carregar_dados_exercicios() -> pd.DataFrame:
-    dir_base = os.path.dirname(os.path.abspath(_file_))
+    dir_base = os.path.dirname(os.path.abspath(__file__))
     caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV)
     df = pd.read_csv(caminho_completo)
     return df
     
 class GerenciadorDeGifs:
-    def _init_(self, master_widget: tk.Widget, label_widget: tk.Label):
+    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label):
         self.master = master_widget
         self.label = label_widget
         self.frames = []
