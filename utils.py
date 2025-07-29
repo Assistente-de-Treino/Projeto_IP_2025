@@ -3,7 +3,9 @@ from tkinter import messagebox
 import pandas as pd
 import os
 from config import CAMINHO_ARQUIVO_CSV, COLUNAS_OBRIGATORIAS
-from PIL import Image, ImageTk, ImageSequence  # Adicionado para GIFs animados
+from PIL import Image, ImageTk, ImageSequence  
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
 
 def calcular_imc(peso, altura_cm):
@@ -82,10 +84,8 @@ class Configuracoes_de_gifs:
             return
 
         try:
-            # Carrega o GIF usando Pillow
             gif = Image.open(gif_path)
 
-            # Extrai todos os frames e converte para formato compatível com Tkinter
             self.frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
 
             self.frame_index = 0
@@ -108,3 +108,37 @@ class Configuracoes_de_gifs:
             self.animation_id = None
         self.frames = []
         self.current_image = None
+
+def gerar_pdf_treino_semanal(plano_semanal: dict, caminho_arquivo: str): #<-- a função de gerar o PDf, usando a biblioteca reportlab
+    try:
+        c = canvas.Canvas(caminho_arquivo, pagesize=letter) #<-- objeto em branco, já é passado o argumento de onde é preciso que o arquivo seja salvo,
+                                                            #nesse caso, é no "caminho_arquivo" e o tamanho da "folha de papel" #tamanho da "folha de papel"
+                                                            # aqui o "letter" significa que ele está em formato de carta
+        largura, altura = letter
+        c.setFont("Helvetica-Bold", 18) #<-- fonte em negrito e tamanho da fonte do título
+        c.drawCentredString(largura / 2.0, altura - 50, "Seu Plano de Treino Semanal") #<-- indica que o texto "Seu plano de treino semanal" fique centralizado, 
+                                                                                        #com base nas coordenadas de largura e altura 
+        y = altura - 100 # <-- serve como um 'cursor', começa do topo e vai descendo
+        for dia, treino in plano_semanal.items():
+            #antes de escrever o dia, o código verifica se tem espaço suficiente na página atual
+            if y < 100:
+                c.showPage();  c.setFont("Helvetica-Bold", 18) # <--se não tiver espaço, o "showpage" muda para a página seguinte
+                c.drawCentredString(largura / 2.0, altura - 50, "Seu Plano de Treino Semanal (continuação)")
+                y = altura - 100
+            c.setFont("Helvetica-Bold", 14); c.drawString(72, y, dia); y -= 25
+            c.setFont("Helvetica", 11) # } esse bloco todo faz com que, se necessário, o pdf quebra para a próxima página
+                                        #no caso de não haver espaço na atual e na próxima ele não começa do topo, 
+                                        #dá uma formatação e adaptada para que fique mais legível e organizado
+            for exercicio in treino:
+                nome, series, repeticoes = exercicio.get("Nome", "N/A"), exercicio.get("Séries", "N/A"), exercicio.get("Repetições", "N/A")
+                linha = f"  • {nome}: {series} séries de {repeticoes} repetições" #esse laço for escreve cada exercício do dia
+                if "Descanso" in nome or "Aeróbico" in nome: linha = f"  • {nome}"
+                c.drawString(82, y, linha); #<-- desenha a linha do exercício e move o cursor para baixo
+                y -= 20 #<-- adiciona um espaço entre um dia e outro
+                if y < 60: c.showPage(); c.setFont("Helvetica", 11); y = altura - 50 
+            y -= 20 # }esse segundo laço for, dentro do principal, é o que faz o processo de gerar os textos pro pdf 
+        c.save() #<-- salva dentro da memória da máquina
+        return True
+    except Exception as e:
+        messagebox.showerror("Erro ao Gerar PDF", f"Não foi possível gerar o PDF: {e}")
+        return False
