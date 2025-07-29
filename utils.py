@@ -31,24 +31,21 @@ def obter_tempo_aerobico(classificacao_imc: str) -> str:
     if "Peso normal" in classificacao_imc: return "20-30 min"
     return "15-20 min"
 
-def carregar_dados_exercicios() -> pd.DataFrame:
-    """Carrega os exercícios de um arquivo CSV (versão simplificada)."""
-    # monta o caminho para o arquivo, garantindo que funcione em qualquer PC
-    dir_base = os.path.dirname(os.path.abspath(__file__))
-    caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV)
+def carregar_dados_exercicios() -> pd.DataFrame: # <-- o DataFrame identifica que as colunas do CSV
+                                                # são separadas por vírgulas e organiza toda a estrutura
+                                                # da tabela e depois guarda na variável df  
     
-    # lê o CSV diretamente, sem verificações extras
-    df = pd.read_csv(caminho_completo)
+    dir_base = os.path.dirname(os.path.abspath(__file__)) # <-- monta o caminho para o arquivo, garantindo que funcione em qualquer PC
+    caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV) # <-- 
     
-    # retorna a tabela com os dados
-    return df
+    df = pd.read_csv(caminho_completo) # <-- lê o CSV
+    
+    return df # <-- retorna a tabela com os dados
     
     
-# A classe que faz os GIFs dançarem na tela
-# Cada vez que a gente precisa de um GIF, a gente cria um "gerenciador" desses
+
 class GerenciadorDeGifs:
-    """Controla o carregamento e animação de GIFs usando Pillow."""
-    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label):
+    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label): #<-- construtor do 
         self.master = master_widget
         self.label = label_widget
         self.frames = []
@@ -72,7 +69,6 @@ class GerenciadorDeGifs:
         frame_atual = self.frames[indice_frame]
         self.label.config(image=frame_atual)
         proximo_indice = (indice_frame + 1) % len(self.frames)
-        # o '150' aqui é o tempo em milissegundos entre cada frame. Quanto maior, mais lento o GIF.
         self.id_animacao = self.master.after(150, self._iniciar_loop_animacao, proximo_indice)
 
     def parar(self):
