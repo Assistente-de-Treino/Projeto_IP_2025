@@ -2,7 +2,7 @@ import pandas as pd
 
 class GeradorDeTreinos:
     #cria  planos de treino semanais com base nos parâmetros do usuário
-    def __init__(self, df_exercicios):
+    def _init_(self, df_exercicios):
         if df_exercicios is None or df_exercicios.empty:
             raise ValueError("O DataFrame de exercícios não pode ser nulo ou vazio.")
         self.df = df_exercicios

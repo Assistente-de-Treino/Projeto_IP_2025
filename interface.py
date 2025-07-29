@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import os
@@ -9,7 +10,7 @@ import utils
 from logica_de_treinos import GeradorDeTreinos 
 
 class AppAssistenteDeTreinos:
-    def __init__(self, master: tk.Tk):
+    def _init_(self, master: tk.Tk):
         self.master = master
         master.title("Assistente de Treinos")
         master.geometry("1200x800")
@@ -39,7 +40,7 @@ class AppAssistenteDeTreinos:
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         try:
-            caminho_imagem = os.path.join(os.path.dirname(__file__), "assets", "fundo.jpg")
+            caminho_imagem = os.path.join(os.path.dirname(_file_), "assets", "fundo.jpg")
             self.original_image = Image.open(caminho_imagem)
         except FileNotFoundError:
             self.background_label.config(bg=config.CORES['CABECALHO_TABELA'])
@@ -159,11 +160,11 @@ class AppAssistenteDeTreinos:
         gif_frame = ttk.Frame(details_frame); gif_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=5)
         gif_label = ttk.Label(gif_frame); gif_label.pack(pady=10)
         
-        gerenciador_gif = utils.Configuracoes_de_gifs(popup, gif_label)
+        gerenciador_gif = utils.GerenciadorDeGifs(popup, gif_label)
         popup.gerenciador_gif = gerenciador_gif # <-- A CORREÇÃO ESTÁ AQUI
         
         caminho_gif_relativo = detalhes["GifURL"]
-        caminho_gif_completo = os.path.join(os.path.dirname(os.path.abspath(__file__)), caminho_gif_relativo)
+        caminho_gif_completo = os.path.join(os.path.dirname(os.path.abspath(_file_)), caminho_gif_relativo)
         
         gerenciador_gif.carregar_e_iniciar(caminho_gif_completo)
         
