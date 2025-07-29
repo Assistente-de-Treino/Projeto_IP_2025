@@ -3,7 +3,7 @@ from tkinter import messagebox
 import pandas as pd
 import os
 from config import CAMINHO_ARQUIVO_CSV, COLUNAS_OBRIGATORIAS
-from PIL import Image, ImageTk, ImageSequence  
+from PIL import Image, ImageTk, ImageSequence
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
@@ -43,20 +43,15 @@ def carregar_dados_exercicios():
     try:
         if not os.path.exists(CAMINHO_ARQUIVO_CSV):
             raise FileNotFoundError
-
         df = pd.read_csv(CAMINHO_ARQUIVO_CSV)
-
         if df.empty:
             raise pd.errors.EmptyDataError
-
         if not all(col in df.columns for col in COLUNAS_OBRIGATORIAS):
             colunas_faltantes = [col for col in COLUNAS_OBRIGATORIAS if col not in df.columns]
             messagebox.showerror("Erro de Dados",
                                  f"O arquivo 'exercicios.csv' está faltando as colunas: {', '.join(colunas_faltantes)}.")
             return None
-
         return df
-
     except FileNotFoundError:
         messagebox.showerror("Erro", f"Arquivo '{CAMINHO_ARQUIVO_CSV}' não encontrado.")
         return None
@@ -82,12 +77,9 @@ class Configuracoes_de_gifs:
         if not gif_path or not os.path.exists(gif_path):
             self.label.config(text="GIF não disponível.", image='')
             return
-
         try:
             gif = Image.open(gif_path)
-
             self.frames = [ImageTk.PhotoImage(frame.copy()) for frame in ImageSequence.Iterator(gif)]
-
             self.frame_index = 0
             self.loop_da_animacao()
         except Exception as e:
@@ -97,10 +89,9 @@ class Configuracoes_de_gifs:
     def loop_da_animacao(self):
         if not self.frames:
             return
-
         self.label.config(image=self.frames[self.frame_index])
         self.frame_index = (self.frame_index + 1) % len(self.frames)
-        self.animation_id = self.master.after(50, self.loop_da_animacao)
+        self.animation_id = self.master.after(150, self.loop_da_animacao) # Velocidade ajustada para 150ms
 
     def parar(self):
         if self.animation_id:
