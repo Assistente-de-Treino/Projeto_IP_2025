@@ -31,26 +31,18 @@ def obter_tempo_aerobico(classificacao_imc: str) -> str:
     if "Peso normal" in classificacao_imc: return "20-30 min"
     return "15-20 min"
 
-def carregar_dados_exercicios() -> Optional[pd.DataFrame]: # <-- carrega os exercícios dentro do arquivo CSV, 
-                                                                #validando se ele está bem estruturado
-    try:
-        dir_base = os.path.dirname(os.path.abspath(__file__)) # <-- verifica onde o arquivo está dentro do computador, 
-        caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV) #<-- monta o caminho completo pra chegar no CSV
-
-        if not os.path.exists(caminho_completo): raise FileNotFoundError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' não foi encontrado.")
-        df = pd.read_csv(caminho_completo) # <--confirma que o arquivo existe e ele é lido pelo pandas
-                                            # transformando numa tabela
-
-        if df.empty: raise ValueError(f"O arquivo '{config.CAMINHO_ARQUIVO_CSV}' está vazio.")
-        colunas_faltantes = [col for col in config.COLUNAS_OBRIGATORIAS if col not in df.columns]
-
-        if colunas_faltantes: raise ValueError(f"Faltam as seguintes colunas no arquivo: {', '.join(colunas_faltantes)}")
-        return df
-    except (FileNotFoundError, ValueError) as e:
-        messagebox.showerror("Erro de Dados", str(e))
-    except Exception as e:
-        messagebox.showerror("Erro Inesperado", f"Ocorreu um erro ao carregar os dados: {e}")
-    return None
+def carregar_dados_exercicios() -> pd.DataFrame:
+    """Carrega os exercícios de um arquivo CSV (versão simplificada)."""
+    # monta o caminho para o arquivo, garantindo que funcione em qualquer PC
+    dir_base = os.path.dirname(os.path.abspath(__file__))
+    caminho_completo = os.path.join(dir_base, config.CAMINHO_ARQUIVO_CSV)
+    
+    # lê o CSV diretamente, sem verificações extras
+    df = pd.read_csv(caminho_completo)
+    
+    # retorna a tabela com os dados
+    return df
+    
     
 # A classe que faz os GIFs dançarem na tela
 # Cada vez que a gente precisa de um GIF, a gente cria um "gerenciador" desses
