@@ -44,9 +44,8 @@ def carregar_dados_exercicios() -> pd.DataFrame: # <-- o DataFrame identifica qu
     
     
 class GerenciadorDeGifs:
-    # o __init__ é o "construtor", ele roda toda vez que a gente cria um novo gerenciador.
-    # Ele serve pra guardar as informações iniciais que o gerenciador vai precisar pra trabalhar.
-    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label):
+    
+    def __init__(self, master_widget: tk.Widget, label_widget: tk.Label): # <-- função init cria a 
         self.master = master_widget # <-- aqui ele guarda a janela onde o GIF vai aparecer
         self.label = label_widget    # <-- e aqui o espaço exato (o Label) que vai mostrar a imagem
         self.frames = []             # <-- uma lista vazia pra guardar todos os frames do GIF
@@ -79,14 +78,11 @@ class GerenciadorDeGifs:
     def _iniciar_loop_animacao(self, indice_frame: int):
         if not self.frames: return # <-- se por algum motivo a lista de frames estiver vazia, ele para
 
-        frame_atual = self.frames[indice_frame] # <-- pega o frame da vez na nossa lista
+        frame_atual = self.frames[indice_frame]
         self.label.config(image=frame_atual)    # <-- coloca o frame no nosso label na tela
 
-        # <-- aqui ele descobre qual é o próximo frame. se chegar no último, o '%' faz ele voltar pro primeiro (índice 0)
-        proximo_indice = (indice_frame + 1) % len(self.frames)
+        proximo_indice = (indice_frame + 1) % len(self.frames) # <-- aqui ele descobre qual é o próximo frame. se chegar no último, o '%' faz ele voltar pro primeiro
 
-        # <-- o '150' aqui é o tempo em milissegundos entre cada frame. Quanto maior, mais lento o GIF.
-        # essa linha é o motor da animação: ela agenda a própria função pra ser chamada de novo depois de 150ms
         self.id_animacao = self.master.after(150, self._iniciar_loop_animacao, proximo_indice)
 
     # um método simples pra parar a animação quando a gente não precisar mais dela (ex: quando fecha a janela do GIF)
