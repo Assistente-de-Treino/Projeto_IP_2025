@@ -80,7 +80,7 @@ class GerenciadorDeGifs:
 
         frame_atual = self.frames[indice_frame]
         self.label.config(image=frame_atual)    # <-- coloca o frame no nosso label na tela
-
+        self.label.image = frame_atual
         proximo_indice = (indice_frame + 1) % len(self.frames) # <-- aqui ele descobre qual é o próximo frame. se chegar no último, o '%' faz ele voltar pro primeiro
 
         self.id_animacao = self.master.after(150, self._iniciar_loop_animacao, proximo_indice)
