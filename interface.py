@@ -10,7 +10,7 @@ import utils
 from logica_de_treinos import GeradorDeTreinos 
 
 class AppAssistenteDeTreinos:
-    def __init__(self, master: tk.Tk):
+    def _init_(self, master: tk.Tk):
         self.master = master
         master.title("Assistente de Treinos")
         master.geometry("1200x800")
@@ -46,14 +46,7 @@ class AppAssistenteDeTreinos:
             self.background_label.config(bg=config.CORES['CABECALHO_TABELA'])
             self.original_image = None
 
-        
-        # Sombra
-        tk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'),
-                 fg="#000033", bg=self.background_label.cget('bg')).place(relx=0.505, rely=0.405, anchor=tk.CENTER)
-        # Texto principal
-        tk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'),
-                 fg="#0000AA", bg=self.background_label.cget('bg')).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-
+        ttk.Label(self.master, text="Assistente de Treinos", font=('Helvetica', 52, 'bold'), foreground=config.CORES['TEXTO_BOTAO'], background=self.background_label.cget('bg')).place(relx=0.5, rely=0.4, anchor=tk.CENTER)
         ttk.Button(self.master, text="Iniciar", command=self.mostrar_interface_principal, style='TButton').place(relx=0.5, rely=0.6, anchor=tk.CENTER, width=200, height=50)
         self.master.bind('<Configure>', self._redimensionar_fundo)
     
@@ -147,7 +140,7 @@ class AppAssistenteDeTreinos:
                 tree.insert("", "end", values=valores)
 
     def ao_clicar_no_exercicio(self, event):
-        tree = event.widget;
+        tree = event.widget
         if not tree.selection(): return
         item_id = tree.selection()[0]; nome_exercicio = tree.item(item_id, 'values')[0]
         detalhes_exercicio = self.df_exercicios[self.df_exercicios["Nome"] == nome_exercicio]
@@ -168,7 +161,7 @@ class AppAssistenteDeTreinos:
         gif_label = ttk.Label(gif_frame); gif_label.pack(pady=10)
         
         gerenciador_gif = utils.GerenciadorDeGifs(popup, gif_label)
-        popup.gerenciador_gif = gerenciador_gif # <-- A CORREÇÃO ESTÁ AQUI
+        popup.gerenciador_gif = gerenciador_gif
         
         caminho_gif_relativo = detalhes["GifURL"]
         caminho_gif_completo = os.path.join(os.path.dirname(os.path.abspath(__file__)), caminho_gif_relativo)
