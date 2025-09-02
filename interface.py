@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 
 import config
 import utils 
-from logica_de_treinos import GeradorDeTreinos 
+from logica_de_treinos import GeradorDosTreinos 
 
 class AppAssistenteDeTreinos:
     def _init_(self, master: tk.Tk):
